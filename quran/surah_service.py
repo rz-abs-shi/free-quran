@@ -21,4 +21,8 @@ class SurahHandler:
 class SurahService:
     path_to_surah_data = 'source/surah.json'
 
-    instance = SurahHandler(path_to_surah_data)
+    __instance = SurahHandler(path_to_surah_data)
+
+    @classmethod
+    def get_instance(cls):
+        return cls.__instance
