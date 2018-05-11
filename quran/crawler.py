@@ -20,8 +20,6 @@ def save_file(url, file_path):
 
 def download_verse(surah_index, verse_index):
 
-    surah_data = SurahService.get_instance()
-
     def index_to_code(index):
         code = str(index + 1)
         return '0' * (3 - len(code)) + code
@@ -39,3 +37,35 @@ def download_verse(surah_index, verse_index):
     )
 
     save_file(url, file_path)
+
+
+def download_surah(surah_index):
+
+    surah_data = SurahService.get_instance().get_surah_data(surah_index)
+
+    print("Progress of %d verses: ")
+
+    successful = True
+
+    for verse_index in range(surah_data['count']):
+        print("Downloading surah {surah_index}. {surah_title}; all: {all_verses}; "
+              "progress: {progress}".format(
+            surah_index=surah_data['index'],
+            surah_title=surah_data['title'],
+            all_verses=surah_data['count'],
+            progress=verse_index
+        ))
+
+        try:
+            download_verse(surah_index, verse_index)
+
+        except Exception as e:
+            print('Error occurred in downloading verse {verse} of {surah} surah'.format(
+                verse=verse_index, surah=surah_index
+            ))
+            print(e)
+            successful = False
+            break
+
+    if successful:
+        print("Downloading finished successfully.")

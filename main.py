@@ -1,5 +1,8 @@
-from quran.crawler import download_verse
+from quran.crawler import download_verse, download_surah
 
 
 if __name__ == '__main__':
-    download_verse(0, 0)
+
+    for i in range(2, 114):
+        download_surah(i)
+
