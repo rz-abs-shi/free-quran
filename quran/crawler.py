@@ -2,6 +2,7 @@ import requests
 from quran import SurahService
 import os
 import errno
+import os.path
 
 
 def save_file(url, file_path):
@@ -18,36 +19,37 @@ def save_file(url, file_path):
         wf.write(res.content)
 
 
-def download_verse(surah_index, verse_index):
-
+def download_verse(surah_index, verse_index, ignore_if_exist=True):
     def index_to_code(index):
-        code = str(index + 1)
+        code = str(index)
         return '0' * (3 - len(code)) + code
 
     surah_code = index_to_code(surah_index)
     verse_code = index_to_code(verse_index)
-
-    url = 'http://www.clearquran.com/mp3_alafasy_64kbps/{surah_code}{verse_code}.mp3'.format(
-        surah_code=surah_code, verse_code=verse_code
-    )
 
     file_path = 'source/media/alafasi/{surah_code}/{verse_code}.mp3'.format(
         surah_code=surah_code,
         verse_code=verse_code,
     )
 
+    if ignore_if_exist and os.path.isfile(file_path):
+        print ("ignored " + file_path)
+        return
+    else:
+        print (file_path)
+
+    url = 'http://www.clearquran.com/mp3_alafasy_64kbps/{surah_code}{verse_code}.mp3'.format(
+        surah_code=surah_code, verse_code=verse_code
+    )
+
     save_file(url, file_path)
 
 
-def download_surah(surah_index):
+def download_surah(surah_index, verse_start_index=0, ignore_if_verse_exist=True):
 
-    surah_data = SurahService.get_instance().get_surah_data(surah_index)
+    surah_data = SurahService.get_instance().get_surah_data(surah_index - 1)
 
-    print("Progress of %d verses: ")
-
-    successful = True
-
-    for verse_index in range(surah_data['count']):
+    for verse_index in range(verse_start_index, surah_data['count']):
         print("Downloading surah {surah_index}. {surah_title}; all: {all_verses}; "
               "progress: {progress}".format(
             surah_index=surah_data['index'],
@@ -57,15 +59,16 @@ def download_surah(surah_index):
         ))
 
         try:
-            download_verse(surah_index, verse_index)
+            download_verse(surah_index, verse_index, ignore_if_exist=ignore_if_verse_exist)
 
         except Exception as e:
             print('Error occurred in downloading verse {verse} of {surah} surah'.format(
                 verse=verse_index, surah=surah_index
             ))
             print(e)
-            successful = False
-            break
 
-    if successful:
-        print("Downloading finished successfully.")
+            return False
+
+    print("Downloading finished successfully.")
+
+    return True
