@@ -1,12 +1,20 @@
-import requests
-from quran import SurahService
-import os
 import errno
+import os
 import os.path
+
+import requests
+
+from quran import SurahService
 
 
 def save_file(url, file_path):
     res = requests.get(url)
+
+    if res.status_code == 404:
+        return False
+
+    if res.status_code != 200:
+        raise Exception('Could not download from ' + url)
 
     if not os.path.exists(os.path.dirname(file_path)):
         try:
