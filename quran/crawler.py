@@ -28,14 +28,11 @@ def save_file(url, file_path):
 
 
 def download_verse(surah_index, verse_index, ignore_if_exist=True):
-    def index_to_code(index):
-        code = str(index)
-        return '0' * (3 - len(code)) + code
 
     surah_code = index_to_code(surah_index)
     verse_code = index_to_code(verse_index)
 
-    file_path = 'source/media/alafasi/{surah_code}/{verse_code}.mp3'.format(
+    file_path = 'source/media/alafasy/{surah_code}/{verse_code}.mp3'.format(
         surah_code=surah_code,
         verse_code=verse_code,
     )
@@ -57,7 +54,7 @@ def download_surah(surah_index, verse_start_index=0, ignore_if_verse_exist=True)
 
     surah_data = SurahService.get_instance().get_surah_data(surah_index - 1)
 
-    for verse_index in range(verse_start_index, surah_data['count']):
+    for verse_index in range(verse_start_index, surah_data['count'] + 1):
         print("Downloading surah {surah_index}. {surah_title}; all: {all_verses}; "
               "progress: {progress}".format(
             surah_index=surah_data['index'],
@@ -80,3 +77,29 @@ def download_surah(surah_index, verse_start_index=0, ignore_if_verse_exist=True)
     print("Downloading finished successfully.")
 
     return True
+
+
+def index_to_code(index):
+    code = str(index)
+    return '0' * (3 - len(code)) + code
+
+
+def get_path_of_verse(reader, surah_index, verse_index, base_path='source/media/'):
+    """
+    returns the file path of an audio
+    :param base_path
+    :param reader: the reader of Quran, for example `alafasy`
+    :param surah_index: index of surah
+    :param verse_index: index of verse
+    :return: path of verse audio file
+    """
+    surah_code = index_to_code(surah_index)
+    verse_code = index_to_code(verse_index)
+
+    file_path = base_path + '{reader}/{surah_code}/{verse_code}.mp3'.format(
+        reader=reader,
+        surah_code=surah_code,
+        verse_code=verse_code,
+    )
+
+    return file_path

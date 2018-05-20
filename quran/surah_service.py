@@ -11,6 +11,9 @@ class SurahHandler:
     def get_surah_data(self, i):
         return self.__surah_json__[i]
 
+    def get_surah_data_base1(self, i):
+        return self.__surah_json__[i - 1]
+
     def get_all_surah_data(self):
         return self.__surah_json__
 

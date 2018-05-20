@@ -1,4 +1,4 @@
-from quran.crawler import download_verse, download_surah
+from tasks import download_surah_task
 
 
 if __name__ == '__main__':
@@ -9,5 +9,4 @@ if __name__ == '__main__':
         else:
             surah_start_index = 1
 
-        while not download_surah(i, surah_start_index):
-            pass
+        download_surah_task.delay(i, surah_start_index)
